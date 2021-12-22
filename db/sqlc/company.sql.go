@@ -13,7 +13,7 @@ INSERT INTO companies (
 ) VALUES (
   $1, $2
 )
-RETURNING id, name, github, createdat
+RETURNING id, name, github, createdAt
 `
 
 type CreateCompanyParams struct {
@@ -28,7 +28,7 @@ func (q *Queries) CreateCompany(ctx context.Context, arg CreateCompanyParams) (C
 		&i.ID,
 		&i.Name,
 		&i.Github,
-		&i.Createdat,
+		&i.CreatedAt,
 	)
 	return i, err
 }
@@ -43,7 +43,7 @@ func (q *Queries) DeleteCompany(ctx context.Context) error {
 }
 
 const getCompany = `-- name: GetCompany :one
-SELECT id, name, github, createdat FROM companies
+SELECT id, name, github, createdAt FROM companies
 WHERE id = $1 LIMIT 1
 `
 
@@ -54,13 +54,13 @@ func (q *Queries) GetCompany(ctx context.Context, id int32) (Company, error) {
 		&i.ID,
 		&i.Name,
 		&i.Github,
-		&i.Createdat,
+		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const listCompanies = `-- name: ListCompanies :many
-SELECT id, name, github, createdat FROM companies
+SELECT id, name, github, createdAt FROM companies
 ORDER BY id
 `
 
@@ -77,7 +77,7 @@ func (q *Queries) ListCompanies(ctx context.Context) ([]Company, error) {
 			&i.ID,
 			&i.Name,
 			&i.Github,
-			&i.Createdat,
+			&i.CreatedAt,
 		); err != nil {
 			return nil, err
 		}

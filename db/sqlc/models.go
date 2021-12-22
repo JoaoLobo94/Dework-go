@@ -11,18 +11,18 @@ type Company struct {
 	ID        int32
 	Name      string
 	Github    string
-	Createdat time.Time
+	CreatedAt time.Time
 }
 
 type Contribution struct {
 	ID          int32
-	Pullrequest string
+	PullRequest string
 	Value       sql.NullInt32
 	Type        string
 	Key         string
 	Merged      sql.NullBool
-	Companyid   int32
-	Createdat   time.Time
+	CompanyId   int32
+	CreatedAt   time.Time
 }
 
 type User struct {
@@ -30,17 +30,17 @@ type User struct {
 	Name      string
 	Key       string
 	Job       string
-	Createdat time.Time
+	CreatedAt time.Time
 }
 
 type Usercompany struct {
 	ID        int32
-	Companyid int32
-	Userid    int32
+	CompanyId int32
+	UserId    int32
 }
 
 type Usercontribution struct {
 	ID             int32
-	Companyid      int32
-	Contributionid int32
+	CompanyId      int32
+	ContributionId int32
 }

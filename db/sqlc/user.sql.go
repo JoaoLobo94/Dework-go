@@ -13,7 +13,7 @@ INSERT INTO users (
 ) VALUES (
   $1, $2, $3
 )
-RETURNING id, name, key, job, createdat
+RETURNING id, name, key, job, createdAt
 `
 
 type CreateUserParams struct {
@@ -30,7 +30,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.Name,
 		&i.Key,
 		&i.Job,
-		&i.Createdat,
+		&i.CreatedAt,
 	)
 	return i, err
 }
@@ -45,7 +45,7 @@ func (q *Queries) DeleteUsers(ctx context.Context) error {
 }
 
 const getUsers = `-- name: GetUsers :one
-SELECT id, name, key, job, createdat FROM users
+SELECT id, name, key, job, createdAt FROM users
 WHERE id = $1 LIMIT 1
 `
 
@@ -57,13 +57,13 @@ func (q *Queries) GetUsers(ctx context.Context, id int32) (User, error) {
 		&i.Name,
 		&i.Key,
 		&i.Job,
-		&i.Createdat,
+		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const listUsers = `-- name: ListUsers :many
-SELECT id, name, key, job, createdat FROM users
+SELECT id, name, key, job, createdAt FROM users
 ORDER BY id
 `
 
@@ -81,7 +81,7 @@ func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
 			&i.Name,
 			&i.Key,
 			&i.Job,
-			&i.Createdat,
+			&i.CreatedAt,
 		); err != nil {
 			return nil, err
 		}

@@ -9,22 +9,22 @@ import (
 
 const createUserContributions = `-- name: CreateUserContributions :one
 INSERT INTO userContributions (
-  contributionId, companyId
+  "contributionId", "companyId"
 ) VALUES (
   $1, $2
 )
-RETURNING id, companyid, contributionid
+RETURNING id, companyId, contributionId
 `
 
 type CreateUserContributionsParams struct {
-	Contributionid int32
-	Companyid      int32
+	ContributionId int32
+	CompanyId      int32
 }
 
 func (q *Queries) CreateUserContributions(ctx context.Context, arg CreateUserContributionsParams) (Usercontribution, error) {
-	row := q.db.QueryRowContext(ctx, createUserContributions, arg.Contributionid, arg.Companyid)
+	row := q.db.QueryRowContext(ctx, createUserContributions, arg.ContributionId, arg.CompanyId)
 	var i Usercontribution
-	err := row.Scan(&i.ID, &i.Companyid, &i.Contributionid)
+	err := row.Scan(&i.ID, &i.CompanyId, &i.ContributionId)
 	return i, err
 }
 
@@ -38,19 +38,19 @@ func (q *Queries) DeleteUserContributions(ctx context.Context) error {
 }
 
 const getUserContributions = `-- name: GetUserContributions :one
-SELECT id, companyid, contributionid FROM userContributions
+SELECT id, companyId, contributionId FROM userContributions
 WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetUserContributions(ctx context.Context, id int32) (Usercontribution, error) {
 	row := q.db.QueryRowContext(ctx, getUserContributions, id)
 	var i Usercontribution
-	err := row.Scan(&i.ID, &i.Companyid, &i.Contributionid)
+	err := row.Scan(&i.ID, &i.CompanyId, &i.ContributionId)
 	return i, err
 }
 
 const listUserContributions = `-- name: ListUserContributions :many
-SELECT id, companyid, contributionid FROM userContributions
+SELECT id, companyId, contributionId FROM userContributions
 ORDER BY id
 `
 
@@ -63,7 +63,7 @@ func (q *Queries) ListUserContributions(ctx context.Context) ([]Usercontribution
 	var items []Usercontribution
 	for rows.Next() {
 		var i Usercontribution
-		if err := rows.Scan(&i.ID, &i.Companyid, &i.Contributionid); err != nil {
+		if err := rows.Scan(&i.ID, &i.CompanyId, &i.ContributionId); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -79,17 +79,17 @@ func (q *Queries) ListUserContributions(ctx context.Context) ([]Usercontribution
 
 const updateUserContributions = `-- name: UpdateUserContributions :exec
 UPDATE userContributions 
-SET contributionId= $2, companyId= $3
+SET "contributionId"= $2, "companyId"= $3
 WHERE id = $1
 `
 
 type UpdateUserContributionsParams struct {
 	ID             int32
-	Contributionid int32
-	Companyid      int32
+	ContributionId int32
+	CompanyId      int32
 }
 
 func (q *Queries) UpdateUserContributions(ctx context.Context, arg UpdateUserContributionsParams) error {
-	_, err := q.db.ExecContext(ctx, updateUserContributions, arg.ID, arg.Contributionid, arg.Companyid)
+	_, err := q.db.ExecContext(ctx, updateUserContributions, arg.ID, arg.ContributionId, arg.CompanyId)
 	return err
 }

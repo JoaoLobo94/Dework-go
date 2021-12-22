@@ -3,6 +3,6 @@ CREATE TABLE public.users (
     name varchar NOT NULL,
     key varchar NOT NULL,
     job varchar NOT NULL,
-    createdAt timestamp without time zone NOT NULL DEFAULT (now()),
+    "createdAt" timestamp without time zone NOT NULL DEFAULT (now()),
     PRIMARY KEY (id)
 );

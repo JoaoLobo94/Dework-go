@@ -9,7 +9,7 @@ ORDER BY id;
 
 -- name: CreateUserContributions :one
 INSERT INTO userContributions (
-  contributionId, companyId
+  "contributionId", "companyId"
 ) VALUES (
   $1, $2
 )
@@ -17,7 +17,7 @@ RETURNING *;
 
 -- name: UpdateUserContributions :exec
 UPDATE userContributions 
-SET contributionId= $2, companyId= $3
+SET "contributionId"= $2, "companyId"= $3
 WHERE id = $1;
 
 -- name: DeleteUserContributions :exec

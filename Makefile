@@ -19,7 +19,7 @@ dropdb:
 	docker exec -it deworkDb dropdb --username=$(POSTGRES_USER) donut_db
 
 migratedb:
-	migrate -path db/migration -database "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@localhost:5433/donut_db?sslmode=$(SSLMODE)" -verbose up
+	migrate -path db/migration -database "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@localhost:5433/deworkDb?sslmode=$(SSLMODE)" -verbose up
 
 sqlc:
 	sqlc generate

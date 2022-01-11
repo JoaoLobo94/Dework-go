@@ -9,26 +9,26 @@ import (
 
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (
-  name, key, job
+  name, "privateKey", job
 ) VALUES (
   $1, $2, $3
 )
-RETURNING id, name, key, job, createdAt
+RETURNING id, name, privateKey, job, createdAt
 `
 
 type CreateUserParams struct {
-	Name string
-	Key  string
-	Job  string
+	Name       string
+	PrivateKey string
+	Job        string
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, createUser, arg.Name, arg.Key, arg.Job)
+	row := q.db.QueryRowContext(ctx, createUser, arg.Name, arg.PrivateKey, arg.Job)
 	var i User
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
-		&i.Key,
+		&i.PrivateKey,
 		&i.Job,
 		&i.CreatedAt,
 	)
@@ -45,7 +45,7 @@ func (q *Queries) DeleteUsers(ctx context.Context) error {
 }
 
 const getUsers = `-- name: GetUsers :one
-SELECT id, name, key, job, createdAt FROM users
+SELECT id, name, privateKey, job, createdAt FROM users
 WHERE id = $1 LIMIT 1
 `
 
@@ -55,7 +55,7 @@ func (q *Queries) GetUsers(ctx context.Context, id int32) (User, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
-		&i.Key,
+		&i.PrivateKey,
 		&i.Job,
 		&i.CreatedAt,
 	)
@@ -63,7 +63,7 @@ func (q *Queries) GetUsers(ctx context.Context, id int32) (User, error) {
 }
 
 const listUsers = `-- name: ListUsers :many
-SELECT id, name, key, job, createdAt FROM users
+SELECT id, name, privateKey, job, createdAt FROM users
 ORDER BY id
 `
 
@@ -79,7 +79,7 @@ func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
-			&i.Key,
+			&i.PrivateKey,
 			&i.Job,
 			&i.CreatedAt,
 		); err != nil {
@@ -98,22 +98,22 @@ func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
 
 const updateUser = `-- name: UpdateUser :exec
 UPDATE users 
-SET name= $2, key= $3, job= $4
+SET name= $2, "privateKey"= $3, job= $4
 WHERE id = $1
 `
 
 type UpdateUserParams struct {
-	ID   int32
-	Name string
-	Key  string
-	Job  string
+	ID         int32
+	Name       string
+	PrivateKey string
+	Job        string
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
 	_, err := q.db.ExecContext(ctx, updateUser,
 		arg.ID,
 		arg.Name,
-		arg.Key,
+		arg.PrivateKey,
 		arg.Job,
 	)
 	return err

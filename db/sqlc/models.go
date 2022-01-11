@@ -8,29 +8,44 @@ import (
 )
 
 type Company struct {
-	ID        int32
-	Name      string
-	Github    string
-	CreatedAt time.Time
+	ID         int32
+	Name       string
+	Github     string
+	PrivateKey string
+	Balance    sql.NullInt32
+	CreatedAt  time.Time
 }
 
 type Contribution struct {
 	ID          int32
 	PullRequest string
-	Value       sql.NullInt32
 	Type        string
-	Key         string
 	Merged      sql.NullBool
+	Balance     sql.NullInt32
+	VoteBalance sql.NullInt32
+	PrivateKey  string
+	StoryId     int32
+	CreatedAt   time.Time
+}
+
+type Story struct {
+	ID          int32
+	PrivateKey  string
+	PullRequest string
+	Type        string
+	Merged      sql.NullBool
+	Balance     sql.NullInt32
+	VoteBalance sql.NullInt32
 	CompanyId   int32
 	CreatedAt   time.Time
 }
 
 type User struct {
-	ID        int32
-	Name      string
-	Key       string
-	Job       string
-	CreatedAt time.Time
+	ID         int32
+	Name       string
+	PrivateKey string
+	Job        string
+	CreatedAt  time.Time
 }
 
 type Usercompany struct {

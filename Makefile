@@ -16,7 +16,7 @@ createdb:
 	docker exec -it deworkDb createdb --username=$(POSTGRES_USER) --owner=$(POSTGRES_USER) deworkDb 
 
 dropdb:
-	docker exec -it deworkDb dropdb --username=$(POSTGRES_USER) donut_db
+	docker exec -it deworkDb dropdb --username=$(POSTGRES_USER) deworkDb
 
 migratedb:
 	migrate -path db/migration -database "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@localhost:5433/deworkDb?sslmode=$(SSLMODE)" -verbose up

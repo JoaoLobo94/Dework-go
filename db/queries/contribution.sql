@@ -8,15 +8,15 @@ ORDER BY id;
 
 -- name: CreateContribution :one
 INSERT INTO contributions (
-  value, "pullRequest", type, key, merged, "companyId"
+  "voteBalance", "pullRequest", type, "privateKey", merged, "storyId", balance
 ) VALUES (
-  $1, $2, $3, $4, $5, $6
+  $1, $2, $3, $4, $5, $6, $7
 )
 RETURNING *;
 
 -- name: UpdateContribution :exec
 UPDATE contributions 
-SET value= $2, "pullRequest"= $3, type= $4, key= $5, merged= $6, "companyId"= $7
+SET "voteBalance"= $2, "pullRequest"= $3, type= $4, "privateKey"= $5, merged= $6, "storyId"= $7, balance= $8
 WHERE id = $1;
 
 -- name: DeleteContribution :exec

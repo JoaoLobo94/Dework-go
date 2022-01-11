@@ -5,29 +5,39 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
 const createCompany = `-- name: CreateCompany :one
 INSERT INTO companies (
-  name, github
+  name, github, balance, "privateKey"
 ) VALUES (
-  $1, $2
+  $1, $2, $3, $4
 )
-RETURNING id, name, github, createdAt
+RETURNING id, name, github, privateKey, balance, createdAt
 `
 
 type CreateCompanyParams struct {
-	Name   string
-	Github string
+	Name       string
+	Github     string
+	Balance    sql.NullInt32
+	PrivateKey string
 }
 
 func (q *Queries) CreateCompany(ctx context.Context, arg CreateCompanyParams) (Company, error) {
-	row := q.db.QueryRowContext(ctx, createCompany, arg.Name, arg.Github)
+	row := q.db.QueryRowContext(ctx, createCompany,
+		arg.Name,
+		arg.Github,
+		arg.Balance,
+		arg.PrivateKey,
+	)
 	var i Company
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
 		&i.Github,
+		&i.PrivateKey,
+		&i.Balance,
 		&i.CreatedAt,
 	)
 	return i, err
@@ -43,7 +53,7 @@ func (q *Queries) DeleteCompany(ctx context.Context) error {
 }
 
 const getCompany = `-- name: GetCompany :one
-SELECT id, name, github, createdAt FROM companies
+SELECT id, name, github, privateKey, balance, createdAt FROM companies
 WHERE id = $1 LIMIT 1
 `
 
@@ -54,13 +64,15 @@ func (q *Queries) GetCompany(ctx context.Context, id int32) (Company, error) {
 		&i.ID,
 		&i.Name,
 		&i.Github,
+		&i.PrivateKey,
+		&i.Balance,
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const listCompanies = `-- name: ListCompanies :many
-SELECT id, name, github, createdAt FROM companies
+SELECT id, name, github, privateKey, balance, createdAt FROM companies
 ORDER BY id
 `
 
@@ -77,6 +89,8 @@ func (q *Queries) ListCompanies(ctx context.Context) ([]Company, error) {
 			&i.ID,
 			&i.Name,
 			&i.Github,
+			&i.PrivateKey,
+			&i.Balance,
 			&i.CreatedAt,
 		); err != nil {
 			return nil, err
@@ -94,17 +108,25 @@ func (q *Queries) ListCompanies(ctx context.Context) ([]Company, error) {
 
 const updateCompany = `-- name: UpdateCompany :exec
 UPDATE companies 
-SET name= $2, github= $3
+SET name= $2, github= $3, balance= $4, "privateKey"= $5
 WHERE id = $1
 `
 
 type UpdateCompanyParams struct {
-	ID     int32
-	Name   string
-	Github string
+	ID         int32
+	Name       string
+	Github     string
+	Balance    sql.NullInt32
+	PrivateKey string
 }
 
 func (q *Queries) UpdateCompany(ctx context.Context, arg UpdateCompanyParams) error {
-	_, err := q.db.ExecContext(ctx, updateCompany, arg.ID, arg.Name, arg.Github)
+	_, err := q.db.ExecContext(ctx, updateCompany,
+		arg.ID,
+		arg.Name,
+		arg.Github,
+		arg.Balance,
+		arg.PrivateKey,
+	)
 	return err
 }

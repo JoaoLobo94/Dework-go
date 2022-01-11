@@ -10,40 +10,43 @@ import (
 
 const createContribution = `-- name: CreateContribution :one
 INSERT INTO contributions (
-  value, "pullRequest", type, key, merged, "companyId"
+  "voteBalance", "pullRequest", type, "privateKey", merged, "storyId", balance
 ) VALUES (
-  $1, $2, $3, $4, $5, $6
+  $1, $2, $3, $4, $5, $6, $7
 )
-RETURNING id, pullRequest, value, type, key, merged, companyId, createdAt
+RETURNING id, pullRequest, type, merged, balance, voteBalance, privateKey, storyId, createdAt
 `
 
 type CreateContributionParams struct {
-	Value       sql.NullInt32
+	VoteBalance sql.NullInt32
 	PullRequest string
 	Type        string
-	Key         string
+	PrivateKey  string
 	Merged      sql.NullBool
-	CompanyId   int32
+	StoryId     int32
+	Balance     sql.NullInt32
 }
 
 func (q *Queries) CreateContribution(ctx context.Context, arg CreateContributionParams) (Contribution, error) {
 	row := q.db.QueryRowContext(ctx, createContribution,
-		arg.Value,
+		arg.VoteBalance,
 		arg.PullRequest,
 		arg.Type,
-		arg.Key,
+		arg.PrivateKey,
 		arg.Merged,
-		arg.CompanyId,
+		arg.StoryId,
+		arg.Balance,
 	)
 	var i Contribution
 	err := row.Scan(
 		&i.ID,
 		&i.PullRequest,
-		&i.Value,
 		&i.Type,
-		&i.Key,
 		&i.Merged,
-		&i.CompanyId,
+		&i.Balance,
+		&i.VoteBalance,
+		&i.PrivateKey,
+		&i.StoryId,
 		&i.CreatedAt,
 	)
 	return i, err
@@ -59,7 +62,7 @@ func (q *Queries) DeleteContribution(ctx context.Context) error {
 }
 
 const getContribution = `-- name: GetContribution :one
-SELECT id, pullRequest, value, type, key, merged, companyId, createdAt FROM contributions
+SELECT id, pullRequest, type, merged, balance, voteBalance, privateKey, storyId, createdAt FROM contributions
 WHERE id = $1 LIMIT 1
 `
 
@@ -69,18 +72,19 @@ func (q *Queries) GetContribution(ctx context.Context, id int32) (Contribution, 
 	err := row.Scan(
 		&i.ID,
 		&i.PullRequest,
-		&i.Value,
 		&i.Type,
-		&i.Key,
 		&i.Merged,
-		&i.CompanyId,
+		&i.Balance,
+		&i.VoteBalance,
+		&i.PrivateKey,
+		&i.StoryId,
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const listContributions = `-- name: ListContributions :many
-SELECT id, pullRequest, value, type, key, merged, companyId, createdAt FROM contributions
+SELECT id, pullRequest, type, merged, balance, voteBalance, privateKey, storyId, createdAt FROM contributions
 ORDER BY id
 `
 
@@ -96,11 +100,12 @@ func (q *Queries) ListContributions(ctx context.Context) ([]Contribution, error)
 		if err := rows.Scan(
 			&i.ID,
 			&i.PullRequest,
-			&i.Value,
 			&i.Type,
-			&i.Key,
 			&i.Merged,
-			&i.CompanyId,
+			&i.Balance,
+			&i.VoteBalance,
+			&i.PrivateKey,
+			&i.StoryId,
 			&i.CreatedAt,
 		); err != nil {
 			return nil, err
@@ -118,29 +123,31 @@ func (q *Queries) ListContributions(ctx context.Context) ([]Contribution, error)
 
 const updateContribution = `-- name: UpdateContribution :exec
 UPDATE contributions 
-SET value= $2, "pullRequest"= $3, type= $4, key= $5, merged= $6, "companyId"= $7
+SET "voteBalance"= $2, "pullRequest"= $3, type= $4, "privateKey"= $5, merged= $6, "storyId"= $7, balance= $8
 WHERE id = $1
 `
 
 type UpdateContributionParams struct {
 	ID          int32
-	Value       sql.NullInt32
+	VoteBalance sql.NullInt32
 	PullRequest string
 	Type        string
-	Key         string
+	PrivateKey  string
 	Merged      sql.NullBool
-	CompanyId   int32
+	StoryId     int32
+	Balance     sql.NullInt32
 }
 
 func (q *Queries) UpdateContribution(ctx context.Context, arg UpdateContributionParams) error {
 	_, err := q.db.ExecContext(ctx, updateContribution,
 		arg.ID,
-		arg.Value,
+		arg.VoteBalance,
 		arg.PullRequest,
 		arg.Type,
-		arg.Key,
+		arg.PrivateKey,
 		arg.Merged,
-		arg.CompanyId,
+		arg.StoryId,
+		arg.Balance,
 	)
 	return err
 }

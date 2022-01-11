@@ -8,15 +8,15 @@ ORDER BY id;
 
 -- name: CreateCompany :one
 INSERT INTO companies (
-  name, github
+  name, github, balance, "privateKey"
 ) VALUES (
-  $1, $2
+  $1, $2, $3, $4
 )
 RETURNING *;
 
 -- name: UpdateCompany :exec
 UPDATE companies 
-SET name= $2, github= $3
+SET name= $2, github= $3, balance= $4, "privateKey"= $5
 WHERE id = $1;
 
 -- name: DeleteCompany :exec

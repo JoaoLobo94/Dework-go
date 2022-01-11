@@ -1,13 +1,13 @@
-CREATE TABLE public.contributions (
+CREATE TABLE public.stories (
     id integer GENERATED ALWAYS AS IDENTITY,
+    "privateKey" varchar NOT NULL,
     "pullRequest" varchar NOT NULL,
     type varchar NOT NULL,
     merged boolean DEFAULT false,
     balance integer,
     "voteBalance" integer,
-    "privateKey" varchar NOT NULL,
-    "storyId" integer NOT NULL,
+    "companyId" integer NOT NULL,
     "createdAt" timestamp without time zone NOT NULL DEFAULT (now()),
     PRIMARY KEY (id),
-    FOREIGN KEY ("storyId") REFERENCES public.companies(id)
+    FOREIGN KEY ("companyId") REFERENCES public.companies(id)
 );

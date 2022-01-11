@@ -1,4 +1,4 @@
-module dework
+module github.com/JoaoLobo94/dework-backend
 
 go 1.17
 

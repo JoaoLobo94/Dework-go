@@ -8,15 +8,15 @@ ORDER BY id;
 
 -- name: CreateStory :one
 INSERT INTO stories (
-  "voteBalance", "pullRequest", type, "privateKey", merged, "companyId", balance
+  "voteBalance", "pullRequest", type, merged, "companyId", balance
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7
+  $1, $2, $3, $4, $5, $6
 )
 RETURNING *;
 
 -- name: UpdateStory :exec
 UPDATE stories 
-SET "voteBalance"= $2, "pullRequest"= $3, type= $4, "privateKey"= $5, merged= $6, "companyId"= $7, balance= $8
+SET "voteBalance"= $2, "pullRequest"= $3, type= $4, merged= $5, "companyId"= $6, balance= $7
 WHERE id = $1;
 
 -- name: DeleteStory :exec

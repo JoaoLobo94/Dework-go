@@ -10,18 +10,17 @@ import (
 
 const createStory = `-- name: CreateStory :one
 INSERT INTO stories (
-  "voteBalance", "pullRequest", type, "privateKey", merged, "companyId", balance
+  "voteBalance", "pullRequest", type, merged, "companyId", balance
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7
+  $1, $2, $3, $4, $5, $6
 )
-RETURNING id, privateKey, pullRequest, type, merged, balance, voteBalance, companyId, createdAt
+RETURNING id, pullRequest, type, merged, balance, voteBalance, companyId, createdAt
 `
 
 type CreateStoryParams struct {
 	VoteBalance sql.NullInt32
 	PullRequest string
 	Type        string
-	PrivateKey  string
 	Merged      sql.NullBool
 	CompanyId   int32
 	Balance     sql.NullInt32
@@ -32,7 +31,6 @@ func (q *Queries) CreateStory(ctx context.Context, arg CreateStoryParams) (Story
 		arg.VoteBalance,
 		arg.PullRequest,
 		arg.Type,
-		arg.PrivateKey,
 		arg.Merged,
 		arg.CompanyId,
 		arg.Balance,
@@ -40,7 +38,6 @@ func (q *Queries) CreateStory(ctx context.Context, arg CreateStoryParams) (Story
 	var i Story
 	err := row.Scan(
 		&i.ID,
-		&i.PrivateKey,
 		&i.PullRequest,
 		&i.Type,
 		&i.Merged,
@@ -62,7 +59,7 @@ func (q *Queries) DeleteStory(ctx context.Context) error {
 }
 
 const getStory = `-- name: GetStory :one
-SELECT id, privateKey, pullRequest, type, merged, balance, voteBalance, companyId, createdAt FROM stories
+SELECT id, pullRequest, type, merged, balance, voteBalance, companyId, createdAt FROM stories
 WHERE id = $1 LIMIT 1
 `
 
@@ -71,7 +68,6 @@ func (q *Queries) GetStory(ctx context.Context, id int32) (Story, error) {
 	var i Story
 	err := row.Scan(
 		&i.ID,
-		&i.PrivateKey,
 		&i.PullRequest,
 		&i.Type,
 		&i.Merged,
@@ -84,7 +80,7 @@ func (q *Queries) GetStory(ctx context.Context, id int32) (Story, error) {
 }
 
 const listStories = `-- name: ListStories :many
-SELECT id, privateKey, pullRequest, type, merged, balance, voteBalance, companyId, createdAt FROM stories
+SELECT id, pullRequest, type, merged, balance, voteBalance, companyId, createdAt FROM stories
 ORDER BY id
 `
 
@@ -99,7 +95,6 @@ func (q *Queries) ListStories(ctx context.Context) ([]Story, error) {
 		var i Story
 		if err := rows.Scan(
 			&i.ID,
-			&i.PrivateKey,
 			&i.PullRequest,
 			&i.Type,
 			&i.Merged,
@@ -123,7 +118,7 @@ func (q *Queries) ListStories(ctx context.Context) ([]Story, error) {
 
 const updateStory = `-- name: UpdateStory :exec
 UPDATE stories 
-SET "voteBalance"= $2, "pullRequest"= $3, type= $4, "privateKey"= $5, merged= $6, "companyId"= $7, balance= $8
+SET "voteBalance"= $2, "pullRequest"= $3, type= $4, merged= $5, "companyId"= $6, balance= $7
 WHERE id = $1
 `
 
@@ -132,7 +127,6 @@ type UpdateStoryParams struct {
 	VoteBalance sql.NullInt32
 	PullRequest string
 	Type        string
-	PrivateKey  string
 	Merged      sql.NullBool
 	CompanyId   int32
 	Balance     sql.NullInt32
@@ -144,7 +138,6 @@ func (q *Queries) UpdateStory(ctx context.Context, arg UpdateStoryParams) error 
 		arg.VoteBalance,
 		arg.PullRequest,
 		arg.Type,
-		arg.PrivateKey,
 		arg.Merged,
 		arg.CompanyId,
 		arg.Balance,

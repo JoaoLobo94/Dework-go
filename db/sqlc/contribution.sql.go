@@ -10,18 +10,17 @@ import (
 
 const createContribution = `-- name: CreateContribution :one
 INSERT INTO contributions (
-  "voteBalance", "pullRequest", type, "privateKey", merged, "storyId", balance
+  "voteBalance", "pullRequest", type, merged, "storyId", balance
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7
+  $1, $2, $3, $4, $5, $6
 )
-RETURNING id, pullRequest, type, merged, balance, voteBalance, privateKey, storyId, createdAt
+RETURNING id, pullRequest, type, merged, balance, voteBalance, storyId, createdAt
 `
 
 type CreateContributionParams struct {
 	VoteBalance sql.NullInt32
 	PullRequest string
 	Type        string
-	PrivateKey  string
 	Merged      sql.NullBool
 	StoryId     int32
 	Balance     sql.NullInt32
@@ -32,7 +31,6 @@ func (q *Queries) CreateContribution(ctx context.Context, arg CreateContribution
 		arg.VoteBalance,
 		arg.PullRequest,
 		arg.Type,
-		arg.PrivateKey,
 		arg.Merged,
 		arg.StoryId,
 		arg.Balance,
@@ -45,7 +43,6 @@ func (q *Queries) CreateContribution(ctx context.Context, arg CreateContribution
 		&i.Merged,
 		&i.Balance,
 		&i.VoteBalance,
-		&i.PrivateKey,
 		&i.StoryId,
 		&i.CreatedAt,
 	)
@@ -62,7 +59,7 @@ func (q *Queries) DeleteContribution(ctx context.Context) error {
 }
 
 const getContribution = `-- name: GetContribution :one
-SELECT id, pullRequest, type, merged, balance, voteBalance, privateKey, storyId, createdAt FROM contributions
+SELECT id, pullRequest, type, merged, balance, voteBalance, storyId, createdAt FROM contributions
 WHERE id = $1 LIMIT 1
 `
 
@@ -76,7 +73,6 @@ func (q *Queries) GetContribution(ctx context.Context, id int32) (Contribution, 
 		&i.Merged,
 		&i.Balance,
 		&i.VoteBalance,
-		&i.PrivateKey,
 		&i.StoryId,
 		&i.CreatedAt,
 	)
@@ -84,7 +80,7 @@ func (q *Queries) GetContribution(ctx context.Context, id int32) (Contribution, 
 }
 
 const listContributions = `-- name: ListContributions :many
-SELECT id, pullRequest, type, merged, balance, voteBalance, privateKey, storyId, createdAt FROM contributions
+SELECT id, pullRequest, type, merged, balance, voteBalance, storyId, createdAt FROM contributions
 ORDER BY id
 `
 
@@ -104,7 +100,6 @@ func (q *Queries) ListContributions(ctx context.Context) ([]Contribution, error)
 			&i.Merged,
 			&i.Balance,
 			&i.VoteBalance,
-			&i.PrivateKey,
 			&i.StoryId,
 			&i.CreatedAt,
 		); err != nil {
@@ -123,7 +118,7 @@ func (q *Queries) ListContributions(ctx context.Context) ([]Contribution, error)
 
 const updateContribution = `-- name: UpdateContribution :exec
 UPDATE contributions 
-SET "voteBalance"= $2, "pullRequest"= $3, type= $4, "privateKey"= $5, merged= $6, "storyId"= $7, balance= $8
+SET "voteBalance"= $2, "pullRequest"= $3, type= $4, merged= $5, "storyId"= $6, balance= $7
 WHERE id = $1
 `
 
@@ -132,7 +127,6 @@ type UpdateContributionParams struct {
 	VoteBalance sql.NullInt32
 	PullRequest string
 	Type        string
-	PrivateKey  string
 	Merged      sql.NullBool
 	StoryId     int32
 	Balance     sql.NullInt32
@@ -144,7 +138,6 @@ func (q *Queries) UpdateContribution(ctx context.Context, arg UpdateContribution
 		arg.VoteBalance,
 		arg.PullRequest,
 		arg.Type,
-		arg.PrivateKey,
 		arg.Merged,
 		arg.StoryId,
 		arg.Balance,

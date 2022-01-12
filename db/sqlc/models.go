@@ -23,14 +23,12 @@ type Contribution struct {
 	Merged      sql.NullBool
 	Balance     sql.NullInt32
 	VoteBalance sql.NullInt32
-	PrivateKey  string
 	StoryId     int32
 	CreatedAt   time.Time
 }
 
 type Story struct {
 	ID          int32
-	PrivateKey  string
 	PullRequest string
 	Type        string
 	Merged      sql.NullBool
@@ -41,11 +39,11 @@ type Story struct {
 }
 
 type User struct {
-	ID         int32
-	Name       string
-	PrivateKey string
-	Job        string
-	CreatedAt  time.Time
+	ID        int32
+	Name      string
+	PublicKey string
+	Job       string
+	CreatedAt time.Time
 }
 
 type Usercompany struct {
@@ -58,4 +56,6 @@ type Usercontribution struct {
 	ID             int32
 	CompanyId      int32
 	ContributionId int32
+	Balance        sql.NullInt32
+	VoteBalance    sql.NullInt32
 }

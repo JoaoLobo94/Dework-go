@@ -5,26 +5,40 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
 const createUserContributions = `-- name: CreateUserContributions :one
 INSERT INTO userContributions (
-  "contributionId", "companyId"
+  "contributionId", "companyId", balance, "voteBalance"
 ) VALUES (
-  $1, $2
+  $1, $2, $3, $4
 )
-RETURNING id, companyId, contributionId
+RETURNING id, companyId, contributionId, balance, voteBalance
 `
 
 type CreateUserContributionsParams struct {
 	ContributionId int32
 	CompanyId      int32
+	Balance        sql.NullInt32
+	VoteBalance    sql.NullInt32
 }
 
 func (q *Queries) CreateUserContributions(ctx context.Context, arg CreateUserContributionsParams) (Usercontribution, error) {
-	row := q.db.QueryRowContext(ctx, createUserContributions, arg.ContributionId, arg.CompanyId)
+	row := q.db.QueryRowContext(ctx, createUserContributions,
+		arg.ContributionId,
+		arg.CompanyId,
+		arg.Balance,
+		arg.VoteBalance,
+	)
 	var i Usercontribution
-	err := row.Scan(&i.ID, &i.CompanyId, &i.ContributionId)
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyId,
+		&i.ContributionId,
+		&i.Balance,
+		&i.VoteBalance,
+	)
 	return i, err
 }
 
@@ -38,19 +52,25 @@ func (q *Queries) DeleteUserContributions(ctx context.Context) error {
 }
 
 const getUserContributions = `-- name: GetUserContributions :one
-SELECT id, companyId, contributionId FROM userContributions
+SELECT id, companyId, contributionId, balance, voteBalance FROM userContributions
 WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetUserContributions(ctx context.Context, id int32) (Usercontribution, error) {
 	row := q.db.QueryRowContext(ctx, getUserContributions, id)
 	var i Usercontribution
-	err := row.Scan(&i.ID, &i.CompanyId, &i.ContributionId)
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyId,
+		&i.ContributionId,
+		&i.Balance,
+		&i.VoteBalance,
+	)
 	return i, err
 }
 
 const listUserContributions = `-- name: ListUserContributions :many
-SELECT id, companyId, contributionId FROM userContributions
+SELECT id, companyId, contributionId, balance, voteBalance FROM userContributions
 ORDER BY id
 `
 
@@ -63,7 +83,13 @@ func (q *Queries) ListUserContributions(ctx context.Context) ([]Usercontribution
 	var items []Usercontribution
 	for rows.Next() {
 		var i Usercontribution
-		if err := rows.Scan(&i.ID, &i.CompanyId, &i.ContributionId); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.CompanyId,
+			&i.ContributionId,
+			&i.Balance,
+			&i.VoteBalance,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -79,7 +105,7 @@ func (q *Queries) ListUserContributions(ctx context.Context) ([]Usercontribution
 
 const updateUserContributions = `-- name: UpdateUserContributions :exec
 UPDATE userContributions 
-SET "contributionId"= $2, "companyId"= $3
+SET "contributionId"= $2, "companyId"= $3, balance= $3, "voteBalance"= $4
 WHERE id = $1
 `
 
@@ -87,9 +113,15 @@ type UpdateUserContributionsParams struct {
 	ID             int32
 	ContributionId int32
 	CompanyId      int32
+	VoteBalance    sql.NullInt32
 }
 
 func (q *Queries) UpdateUserContributions(ctx context.Context, arg UpdateUserContributionsParams) error {
-	_, err := q.db.ExecContext(ctx, updateUserContributions, arg.ID, arg.ContributionId, arg.CompanyId)
+	_, err := q.db.ExecContext(ctx, updateUserContributions,
+		arg.ID,
+		arg.ContributionId,
+		arg.CompanyId,
+		arg.VoteBalance,
+	)
 	return err
 }

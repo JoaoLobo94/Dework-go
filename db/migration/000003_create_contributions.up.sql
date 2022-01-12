@@ -5,7 +5,6 @@ CREATE TABLE public.contributions (
     merged boolean DEFAULT false,
     balance integer,
     "voteBalance" integer,
-    "privateKey" varchar NOT NULL,
     "storyId" integer NOT NULL,
     "createdAt" timestamp without time zone NOT NULL DEFAULT (now()),
     PRIMARY KEY (id),

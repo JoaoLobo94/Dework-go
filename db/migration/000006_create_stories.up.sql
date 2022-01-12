@@ -1,6 +1,5 @@
 CREATE TABLE public.stories (
     id integer GENERATED ALWAYS AS IDENTITY,
-    "privateKey" varchar NOT NULL,
     "pullRequest" varchar NOT NULL,
     type varchar NOT NULL,
     merged boolean DEFAULT false,
